@@ -23,6 +23,8 @@ public class GameFrame extends JFrame {
 
 	int enemyX = 250;
 	int enemyY = 420;
+	
+	boolean isPlay = true;
 
 	public GameFrame() {
 		initData();
@@ -52,8 +54,8 @@ public class GameFrame extends JFrame {
 			// false : 오른으로 가능 상황
 			boolean direction = true;
 
-			while (true) {
-				System.out.println("진행중");
+			while (isPlay) {
+				// System.out.println("진행중");
 
 				if (direction) {
 					enemyX -= 10;
@@ -72,11 +74,12 @@ public class GameFrame extends JFrame {
 					direction = true;
 				}
 
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
 
 				repaint();
 			}
@@ -102,7 +105,7 @@ public class GameFrame extends JFrame {
 		// 다른 작업자에게 일을 위임 시킨다.
 		Thread thread = new Thread(imagePanel);
 		thread.start();
-
+    
 	}
 
 	private void setInitLayout() {
@@ -144,12 +147,20 @@ public class GameFrame extends JFrame {
 					playerX += 10;
 				} else if (code == KeyEvent.VK_SPACE) {
 					// 1. 스페이스를 눌렀을 때 적군을 멈출 수 있도록 코드 수정
+					if(isPlay == true) {						
+						isPlay = false;
+					} else {
+						isPlay = true;
+					}
+					
 				}
-				if(playerX - enemyX <= 30 && playerX - enemyX >= 30){
+				// 2. player 가 적군과 만났다면 player 그림을 없애주세요
+				if(playerX ==  enemyX && playerY == enemyY) {
 					player1 = null;
 				}
+				System.out.println(" p : " + playerX + ", 적 : " + enemyX);
 
-				// 2. player 가 적군과 만났다면 player 그림을 없애주세요
+
 				repaint();
 			}
 		});
