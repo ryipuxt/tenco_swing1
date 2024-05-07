@@ -1,4 +1,4 @@
-package bubble;
+package bubble.test.ex09;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -7,26 +7,24 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import bubble.components.Enemy;
-import bubble.components.Player;
-
 public class BubbleFrame extends JFrame {
-
-	// 컨텍스트를 생성하는 방법 (셀프 참조)
+	
+	// 컨텍스트를 생성하는 방법 (셀프 참조) 
 	BubbleFrame mContext = this;
-
+	
 	private JLabel backgroundMap;
 	// 포함관계 - 콤포지션
 	private Player player;
-	private Enemy enemy1;
 
 	public BubbleFrame() {
 
 		initData();
 		setInitLayout();
 		addEventListener();
-
+		// Player 백그라운드 서비스 시작
+		new Thread(new BackgroundPlayerService(player)).start();
 	}
+	
 
 	private void initData() {
 		// todo 이미지 변경
@@ -36,11 +34,9 @@ public class BubbleFrame extends JFrame {
 		// Frame --> root Panel
 		setContentPane(backgroundMap); // add 처리
 		setSize(1000, 640);
-
-		// mContext --> 참조 타입( ) --> 주소값에 크기는 기본 4byte 이다.
+		
+		// mContext --> 참조 타입( ) --> 주소값에 크기는 기본 4byte 이다.  
 		player = new Player(mContext);
-
-		enemy1 = new Enemy(mContext);
 
 	}
 
@@ -52,7 +48,6 @@ public class BubbleFrame extends JFrame {
 		setVisible(true);
 
 		add(player);
-		add(enemy1);
 	}
 
 	private void addEventListener() {
@@ -80,15 +75,13 @@ public class BubbleFrame extends JFrame {
 
 					break;
 				case KeyEvent.VK_UP:
-					if (!player.isUp()) {
-						player.up();
-					}
+					player.up();
 					break;
 				case KeyEvent.VK_SPACE:
-					// add(new Bubble(player));
+					//add(new Bubble(player));
 					player.attack();
-					// 프레임에 컴포넌트를 add 동작은 누구? JFrame --> add() 메서드 이다.
-					// 버블 실행시에 끊김 현상이 발생하는 이유는 왜 일까??
+					// 프레임에 컴포넌트를 add 동작은 누구? JFrame --> add() 메서드 이다. 
+					// 버블 실행시에 끊김 현상이 발생하는 이유는 왜 일까?? 
 					break;
 				default:
 					break;
@@ -113,14 +106,10 @@ public class BubbleFrame extends JFrame {
 
 		});
 	}
-
-	// getter
+	
+	// getter 
 	public Player getPlayer() {
 		return player;
-	}
-
-	public Enemy getEnemy() {
-		return enemy1;
 	}
 
 	// 코드 테스트

@@ -1,4 +1,4 @@
-package bubble;
+package bubble.test.ex08;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -7,18 +7,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import bubble.components.Enemy;
-import bubble.components.Player;
-
 public class BubbleFrame extends JFrame {
-
-	// 컨텍스트를 생성하는 방법 (셀프 참조)
-	BubbleFrame mContext = this;
 
 	private JLabel backgroundMap;
 	// 포함관계 - 콤포지션
 	private Player player;
-	private Enemy enemy1;
 
 	public BubbleFrame() {
 
@@ -26,6 +19,8 @@ public class BubbleFrame extends JFrame {
 		setInitLayout();
 		addEventListener();
 
+		// Player 백그라운드 서비스 시작
+		new Thread(new BackgroundPlayerService(player)).start();
 	}
 
 	private void initData() {
@@ -37,10 +32,7 @@ public class BubbleFrame extends JFrame {
 		setContentPane(backgroundMap); // add 처리
 		setSize(1000, 640);
 
-		// mContext --> 참조 타입( ) --> 주소값에 크기는 기본 4byte 이다.
-		player = new Player(mContext);
-
-		enemy1 = new Enemy(mContext);
+		player = new Player();
 
 	}
 
@@ -52,7 +44,6 @@ public class BubbleFrame extends JFrame {
 		setVisible(true);
 
 		add(player);
-		add(enemy1);
 	}
 
 	private void addEventListener() {
@@ -65,11 +56,12 @@ public class BubbleFrame extends JFrame {
 
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
+
 					// 왼쪽으로 방향키 누르고 있다면
-					// key 이벤트가 계속 <- <- <- <- <- <-
+					// key 이벤트가 계속 <- <-
 					// 왼쪽 상태가 아니라면
 					// 왼쪽 벽에 충돌 한게 아니라면
-					if (!player.isLeft() && !player.isLeftWallCrash()) {
+					if (!player.isLeftWallCrash() && !player.isLeft()) {
 						player.left();
 					}
 					break;
@@ -77,19 +69,17 @@ public class BubbleFrame extends JFrame {
 					if (!player.isRight() && !player.isRightWallCrash()) {
 						player.right();
 					}
-
 					break;
 				case KeyEvent.VK_UP:
-					if (!player.isUp()) {
-						player.up();
-					}
+					player.up();
+					// if (!player.isUp()) {
+					// }
 					break;
+
 				case KeyEvent.VK_SPACE:
-					// add(new Bubble(player));
-					player.attack();
-					// 프레임에 컴포넌트를 add 동작은 누구? JFrame --> add() 메서드 이다.
-					// 버블 실행시에 끊김 현상이 발생하는 이유는 왜 일까??
+					add(new Bubble(player));
 					break;
+
 				default:
 					break;
 				}
@@ -99,11 +89,9 @@ public class BubbleFrame extends JFrame {
 			public void keyReleased(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					// 왼쪽으로 가능 상태 멈춤
 					player.setLeft(false);
 					break;
 				case KeyEvent.VK_RIGHT:
-					// 오른쪽으로 가능 상태 멈춤
 					player.setRight(false);
 					break;
 				default:
@@ -112,15 +100,6 @@ public class BubbleFrame extends JFrame {
 			} // end of KeyReleased
 
 		});
-	}
-
-	// getter
-	public Player getPlayer() {
-		return player;
-	}
-
-	public Enemy getEnemy() {
-		return enemy1;
 	}
 
 	// 코드 테스트
